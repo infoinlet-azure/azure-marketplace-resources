@@ -60,8 +60,8 @@ Three properties hold on every call:
 1. Subscribe to Data Guard in Microsoft Marketplace and pick a plan and term.
 2. Open the new SaaS subscription in the Azure portal and select **Configure
    account**. You are sent to `https://cloud.llmlinq.com/azure/data-guard/landing`.
-3. **Sign in with Microsoft** (work or personal account), or with an LLMLinq
-   email and password.
+3. Select **Continue with Microsoft** (work or personal account), or sign in
+   with an LLMLinq email and password.
 4. Check the account the subscription will be attached to, then select **Attach
    and activate**. This is when Microsoft starts billing. A subscription can be
    attached to only one LLMLinq account.
