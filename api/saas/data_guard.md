@@ -1,11 +1,14 @@
 # Data Guard API (SaaS) - Usage Guide
 
 This guide explains how to subscribe to and use the **Data Guard API**, a
-hosted HTTPS API sold as a SaaS subscription in Microsoft Marketplace. There is
-nothing to deploy: subscribe, create an API key, and call the API.
+hosted HTTPS API sold as a SaaS subscription in Microsoft Marketplace, with a
+hosted MCP server for AI agents included in the same subscription. There is
+nothing to deploy: subscribe, create an API key, and call the API or connect
+your MCP client.
 
 - Base URL: `https://api.llmlinq.com/data-guard/v1`
-- Authentication: API key, `Authorization: Bearer llq_live_...`
+- MCP server: `https://api.llmlinq.com/data-guard/mcp` (section 4.5)
+- Authentication: API key, `Authorization: Bearer llq_live_...`, for both
 - Endpoints: `POST /scan`, `POST /redact`, `POST /restore`, `POST /check`, `GET /detectors`
 - Document kinds: text, JSON, NDJSON, YAML, CSV
 - Coverage: 64 entity types across PII, PHI, financial data, and secrets
@@ -179,6 +182,63 @@ These need no key, so you can read them before subscribing:
 
 `openapi.yaml` works with Postman, Insomnia, Bruno, or `openapi-generator` for a
 typed client.
+
+### 4.5 Use it from an MCP client
+
+The same subscription and the same API key serve a hosted MCP server, for AI
+agents and MCP clients such as Claude, VS Code, and Copilot Studio.
+
+| | |
+|---|---|
+| Endpoint | `https://api.llmlinq.com/data-guard/mcp` |
+| Transport | MCP streamable HTTP, stateless, JSON responses |
+| Authentication | your API key: `Authorization: Bearer llq_live_...` or `X-Api-Key: llq_live_...` |
+
+Most clients take a configuration like this:
+
+```json
+{
+  "mcpServers": {
+    "data-guard": {
+      "type": "http",
+      "url": "https://api.llmlinq.com/data-guard/mcp",
+      "headers": { "Authorization": "Bearer llq_live_..." }
+    }
+  }
+}
+```
+
+Keep the key out of shared configuration files; most clients can read it from an
+environment variable.
+
+The server offers five tools. They take the same parameters as the HTTP
+endpoints in section 5 and return the same results:
+
+| Tool | Same as | What it does |
+|---|---|---|
+| `list_detectors` | `GET /detectors` | Entity types, policy packs, strategies, and document kinds. Optional `category` |
+| `scan_data` | `POST /scan` | Find sensitive values without changing anything |
+| `redact_data` | `POST /redact` | Rewrite them under a policy, with an audit receipt |
+| `restore_data` | `POST /restore` | Reverse an `encrypt` redaction, given the same `key` |
+| `check_policy` | `POST /check` | Pass or fail against a compliance pack (default `hipaa_safe_harbor`) |
+
+Two rules differ from a self-hosted MCP server:
+
+- **Inline input only.** Send the document as `text` or `base64_data`. A `path`
+  argument is refused, because the server cannot read files on your machine.
+- **You pass the key.** `redact_data` with the `hash` or `encrypt` strategy, and
+  `restore_data`, need `key` on every call. The service stores no key, so keep
+  it: a lost key cannot be recovered.
+
+A refusal from the engine (a bad parameter, a wrong restore key) comes back as a
+tool error with the same message the HTTP API gives. An authentication or
+subscription problem is an HTTP status on the request itself, with the bodies in
+section 7, so your client reports it as a connection or auth failure.
+
+Billing is the API's (section 8.1): each successful call to `scan_data`,
+`redact_data`, `restore_data`, or `check_policy` counts as one API call, and
+its request size counts as data submitted. `list_detectors` and the MCP protocol
+messages themselves (connecting, listing tools) are not counted.
 
 ---
 
@@ -560,6 +620,10 @@ Errors are JSON: `{"error": "<code>"}`, plus `message` where it helps. Branch on
 | 429 | - | Throttled. Retry with exponential backoff. |
 | 500 | `internal_error` | An unexpected fault. Retry; if it persists, contact support. |
 
+The MCP server (section 4.5) answers `401`, `403`, `429`, and `500` with the same
+statuses and bodies. The `400` and `413` cases reach an MCP client as a tool error
+carrying the same message.
+
 A successful `POST` returns a `request_id`; an error does not. When contacting
 support, quote the `request_id`, or the error code and the time of the call -
 we cannot see your document.
@@ -611,6 +675,9 @@ subscription was activated, and resets when the term renews. Unused allowance
 does not carry over. Usage beyond it is reported to Microsoft hourly. The
 configure page shows your usage.
 
+MCP tool calls are billed the same way (section 4.5): one successful
+`scan_data`, `redact_data`, `restore_data`, or `check_policy` is one API call.
+
 Only calls that the service answers successfully are counted. A `400`, `401`,
 `403`, or `413` is not billed.
 
@@ -649,6 +716,8 @@ call, and are not retained.
 | "That email address can't be used to create an LLMLinq account" | Start again from **Configure account** in the Azure portal, which allows a work address, or use a personal address. |
 | Attach fails with a message naming another account | The subscription is already attached to a different LLMLinq account; sign in as that account. |
 | `400 unsupported_parameters` with `path` | File paths are not accepted over HTTP. Send the content as `text` or `base64_data`. |
+| MCP client cannot connect, or reports an auth error | Check the header: `Authorization: Bearer llq_live_...` (or `X-Api-Key`) on `https://api.llmlinq.com/data-guard/mcp`. A `403` means the subscription is not active, as for the API. |
+| MCP tool error naming `path` | The hosted MCP server takes `text` or `base64_data` only. |
 | `400` "The 'hash' strategy requires a key" | Pass `key`. `gdpr_basic` uses `hash`, so it needs one too. |
 | `400` "No encrypted placeholders were found" | `/restore` only reverses `encrypt` output, which looks like `<US_SSN:enc:...>`. |
 | `400` "Could not restore ... no changes were applied" | The key differs from the one used at redaction time, or a placeholder was modified. |
