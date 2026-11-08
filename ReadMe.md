@@ -16,7 +16,10 @@ The repository covers one delivery type today:
 azure-marketplace-resources/
 └── api/                                  # API-based Marketplace products
     └── saas/                             # SaaS delivery, hosted by us
-        └── data_guard.md                 # Usage guide
+        └── data_guard/                   # Guide set: start at README.md
+            ├── README.md                 # Index: what each page is for
+            ├── getting-started.md        # Subscribe to first call
+            └── ...                       # Examples, AI agents, policies, API reference, billing
 ```
 
 ---
@@ -27,7 +30,7 @@ azure-marketplace-resources/
 
 | Product | Description | Resources |
 |---|---|---|
-| Data Guard API | HTTPS API that detects and redacts PII, PHI, financial data, and secrets across text, JSON, NDJSON, YAML, and CSV, with compliance policy packs and auditable receipts. | [Usage guide](api/saas/data_guard.md) |
+| Data Guard API | HTTPS API that detects and redacts PII, PHI, financial data, and secrets across text, JSON, NDJSON, YAML, and CSV, with compliance policy packs and auditable receipts. Includes a hosted MCP server for AI agents. | [Getting started](api/saas/data_guard/getting-started.md) · [All docs](api/saas/data_guard/README.md) |
 
 ---
 
@@ -48,7 +51,7 @@ azure-marketplace-resources/
    cd azure-marketplace-resources
    ```
 2. Open the guide for your product:
-   - Data Guard API (SaaS): [`api/saas/data_guard.md`](api/saas/data_guard.md)
+   - Data Guard API (SaaS): [`api/saas/data_guard/getting-started.md`](api/saas/data_guard/getting-started.md)
 3. Follow that guide for setup and integration.
 
 ---
