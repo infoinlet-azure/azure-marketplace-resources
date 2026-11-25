@@ -10,7 +10,8 @@ subscription connects one Foundry resource.
 ## What the router app can do
 
 An administrator of your Microsoft Entra tenant approves *AI Cloud Gateway
-Router* once. The app asks for no permissions of its own. It can reach only the
+Router* once. The app asks only for the basic sign-in permission Microsoft
+requires (Microsoft Graph *User.Read*), which it never uses. It can reach only the
 resource where you assign it the **Foundry User** role. With that role it can:
 
 - call the models deployed on the resource;
@@ -23,7 +24,8 @@ signs in to your tenant with its own certificate.
 
 ## Which resources work
 
-- A Foundry (Azure AI Services) resource. Other kinds are refused.
+- A Foundry (Azure AI Services) resource, or an Azure OpenAI resource. Other
+  kinds are refused.
 - It needs a **custom subdomain**, which Microsoft Entra sign-in requires. Set
   one on the resource's **Networking** page.
 - It must accept **public network traffic**. A resource with public network
@@ -56,7 +58,7 @@ CLI.
 
 ## Disconnect
 
-The dashboard has no disconnect button for a Foundry resource yet. To stop
+The dashboard has no disconnect button for a Foundry resource. To stop
 routing:
 
 - **At once:** revoke your API keys on **API keys**. They stop working within 60

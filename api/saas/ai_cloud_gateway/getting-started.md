@@ -34,14 +34,15 @@ On **Azure account**, follow the three steps:
 
 1. **Allow AI Cloud Gateway Router in your tenant.** Select **Open Microsoft's
    approval page**. A tenant administrator approves it once; if that is not
-   you, copy the link and send it to them. The app asks for no permissions of
-   its own.
+   you, copy the link and send it to them. The app asks only for the basic
+   sign-in permission Microsoft requires (Microsoft Graph *User.Read*), which
+   it never uses.
 2. **Give it access to your Foundry resource.** Assign the app the
    **Foundry User** role on the resource. The page shows the Azure CLI
    commands, or use **Access control (IAM)** > **Add role assignment** in the
    Azure portal and search for *AI Cloud Gateway Router*.
-3. **Check the connection.** Paste the tenant ID and the resource ID (the
-   commands print both) and select **Check and save**.
+3. **Check the connection.** Paste the resource ID (the commands print it;
+   the tenant ID is filled in from step 1) and select **Check and save**.
 
 Azure can take several minutes to apply a new role. Meanwhile the page shows
 "Waiting for Azure to apply the role" and checks again on its own. When it shows

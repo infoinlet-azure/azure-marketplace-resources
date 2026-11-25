@@ -31,7 +31,7 @@ expected to answer each request well.
 
 ## Recommended models
 
-About two models per tier are **recommended**, marked with a star. On Foundry
+Six models are **recommended**, one to three per tier, marked with a star. On Foundry
 they are the models we suggest deploying:
 
 `openai.gpt-5-nano`, `openai.gpt-5-mini`, `openai.gpt-5`,
