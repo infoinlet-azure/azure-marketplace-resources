@@ -37,7 +37,7 @@ one. A revoked key stops working within 60 seconds.
 | `tools` | object[] | Function tools with a JSON Schema `parameters` |
 | `tool_choice` | string or object | `none`, `auto`, `required`, or `{"type": "function", "function": {"name": ...}}` |
 | `response_format` | object | `{"type": "json_object"}` or `{"type": "json_schema", "json_schema": {"name": ..., "schema": {...}}}` |
-| `n` | integer | Only `1` |
+| `n` | integer | Ignored: one choice is always returned |
 
 Message `content` is a string or a list of parts: `{"type": "text", ...}` and
 `{"type": "image_url", "image_url": {"url": "data:image/png;base64,..."}}`.
@@ -143,7 +143,7 @@ curl https://api.aicloudgateway.com/v1/models -H "Authorization: Bearer $ACG_API
 | Limit | Value |
 |---|---|
 | Time between bytes | 60 seconds. Non-streaming answers send a space every 10 seconds while the model works, so they do not reach it |
-| Longest request | 15 minutes |
+| Longest request | About 14 minutes. A longer answer ends with `finish_reason` `length` |
 | Key and subscription changes | Apply within 60 seconds |
 | Budget and model choice changes | Apply within about a minute |
 | Deployment changes | Apply within about a minute of **Refresh** on **Models** |
@@ -162,10 +162,7 @@ OpenAI error envelope, so SDKs raise their usual exceptions. Match on `code`.
 |---|---|---|
 | 400 | `invalid_request` | Fix the field named in `param` |
 | 400 | `invalid_model` | Use `auto`, `auto:cost`, `auto:balanced` or `auto:quality` |
-| 400 | `unsupported_parameter` | Set `n` to 1 |
-| 400 | `empty_conversation` | Send at least one user or assistant message with content |
 | 400 | `unsupported_image_url` | Send images as base64 data URLs (png, jpeg, gif, webp) |
-| 400 | `invalid_image` | Fix the base64 image data |
 | 400 | `invalid_tool_arguments` | Send tool-call `arguments` as valid JSON |
 | 400 | `missing_tool_call_id` | Add `tool_call_id` to each `tool` message |
 | 400 | `no_eligible_model` | Input too long, or needs images or tools no model in routing has. Trim it, or [deploy or switch on more models](models.md) |

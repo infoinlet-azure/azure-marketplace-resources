@@ -115,8 +115,8 @@ With curl, add `-i` to print the headers. Every header:
 
 ## Stream the answer
 
-Use streaming for long answers: a non-streamed request must send its first byte
-within 60 seconds.
+Use streaming for long answers, so output shows as it arrives instead of after
+the whole answer is ready.
 
 ```python
 stream = client.chat.completions.create(
